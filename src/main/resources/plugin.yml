@@ -1,0 +1,10 @@
+name: RevivalBlock
+main: milk.pureentities.RevivalBlock
+version: "1.0"
+api: ["1.0.0"]
+
+load: STARTUP
+author: SW-Team
+description: Nukkit에서 소생블럭을 사용하자!
+website: https://github.com/SW-Team/RevivalBlock
+commands: []
