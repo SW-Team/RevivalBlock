@@ -1,5 +1,5 @@
 name: RevivalBlock
-main: milk.pureentities.RevivalBlock
+main: milk.revivalblock.RevivalBlock
 version: "1.0"
 api: ["1.0.0"]
 
