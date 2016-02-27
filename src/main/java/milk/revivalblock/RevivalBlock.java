@@ -16,6 +16,7 @@ import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
+import milk.revivalblock.util.Utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -112,13 +113,13 @@ public class RevivalBlock extends PluginBase implements Listener{
             ev.setCancelled();
         }else if((value = this.getRevivalBlock(block)) > -2){
             if(value == -1){
-                as = explode("/", this.rand["normal"]);
-                if(mt_rand(1, as[1]) > as[0]){
+                String[] as = this.rand.get("normal").toString().split("/");
+                if(Utils.rand(1, as[1]) > as[0]){
                     ev.setCancelled();
                     return;
                 }
-                foreach(t.getDrops(i) as d){
-                    p.getInventory().addItem(Item.get(...d));
+                foreach(block.getDrops(item) as d){
+                    player.getInventory().addItem(Item.get(...d));
                 }
             }else{
                 Block block1 = Block.get(value);
@@ -185,32 +186,30 @@ public class RevivalBlock extends PluginBase implements Listener{
         }
     }
 
-    public void onCommand(CommandSender i, Command cmd, String label, String[] sub){
+    @Override
+    public boolean onCommand(CommandSender i, Command cmd, String label, String[] sub){
         if(!(i instanceof Player)){
             return true;
         }
 
-        String pu = i.getName();
-        String output = "[RevivalBlock]";
-        if(!isset(this.pos[pu]["pos1"]) or !isset(this.pos[pu]["pos2"])){
-            output += "Please tap a block to make to revival block";
-            i.sendMessage(output);
+        Player player = (Player) i;
+        if(!this.pos.containsKey(player.getName()) || !this.pos.containsKey(player.getName())){
+            player.sendMessage("[RevivalBlock]Please tap a block to make to revival block");
             return true;
         }
 
-        sx = min(this.pos[pu]["pos1"][0], this.pos[pu]["pos2"][0]);
-        sy = min(this.pos[pu]["pos1"][1], this.pos[pu]["pos2"][1]);
-        sz = min(this.pos[pu]["pos1"][2], this.pos[pu]["pos2"][2]);
-        ex = max(this.pos[pu]["pos1"][0], this.pos[pu]["pos2"][0]);
-        ey = max(this.pos[pu]["pos1"][1], this.pos[pu]["pos2"][1]);
-        ez = max(this.pos[pu]["pos1"][2], this.pos[pu]["pos2"][2]);
-        if(cmd.getName() == "revi"){
-            this.makeBlock(sx, sy, sz, ex, ey, ez, isset(sub[0]), i.getLevel());
+        int sx = Math.min(this.pos[player.getName()]["pos1"][0], this.pos[player.getName()]["pos2"][0]);
+        int sy = Math.min(this.pos[player.getName()]["pos1"][1], this.pos[player.getName()]["pos2"][1]);
+        int sz = Math.min(this.pos[player.getName()]["pos1"][2], this.pos[player.getName()]["pos2"][2]);
+        int ex = Math.max(this.pos[player.getName()]["pos1"][0], this.pos[player.getName()]["pos2"][0]);
+        int ey = Math.max(this.pos[player.getName()]["pos1"][1], this.pos[player.getName()]["pos2"][1]);
+        int ez = Math.max(this.pos[player.getName()]["pos1"][2], this.pos[player.getName()]["pos2"][2]);
+        if(cmd.getName().equals("revi")){
+            this.makeBlock(sx, sy, sz, ex, ey, ez, sub.length > 0, player.getLevel());
         }else{
             this.destroyBlock(sx, sy, sz, ex, ey, ez);
         }
-        output += cmd.getName() == "revi" ? "The chosen block was made to revival block" : "The chosen block is no more revival block";
-        i.sendMessage(output);
+        player.sendMessage("[RevivalBlock]" + (cmd.getName().equals("revi") ? "The chosen block was made to revival block" : "The chosen block is no more revival block"));
         return true;
     }
 }

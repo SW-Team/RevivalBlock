@@ -7,4 +7,10 @@ load: STARTUP
 author: SW-Team
 description: Nukkit에서 소생블럭을 사용하자!
 website: https://github.com/SW-Team/RevivalBlock
-commands: []
+commands:
+ revi:
+  usage: "usage: /revi"
+  permission: revival.command.revi
+ unrevi:
+  usage: "usage: /unrevi"
+  permission: revival.command.unrevi
