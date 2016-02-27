@@ -114,12 +114,12 @@ public class RevivalBlock extends PluginBase implements Listener{
         }else if((value = this.getRevivalBlock(block)) > -2){
             if(value == -1){
                 String[] as = this.rand.get("normal").toString().split("/");
-                if(Utils.rand(1, as[1]) > as[0]){
+                if(Utils.rand(1, Integer.parseInt(as[1])) > Integer.parseInt(as[0])){
                     ev.setCancelled();
                     return;
                 }
-                foreach(block.getDrops(item) as d){
-                    player.getInventory().addItem(Item.get(...d));
+                for(int[] d : block.getDrops(item)){
+                    player.getInventory().addItem(Item.get(d[0], d[1], d[2]));
                 }
             }else{
                 Block block1 = Block.get(value);
@@ -138,13 +138,13 @@ public class RevivalBlock extends PluginBase implements Listener{
                     if(item1.getId() > 0){
                         player.getLevel().setBlock(new Vector3(block.x, block.y, block.z), item1.getBlock(), true);
                     }else{
-                        foreach(block1.getDrops(i) as drops){
-                            player.getInventory().addItem(Item.get(...drops));
+                        for(int[] d : block1.getDrops(item)){
+                            player.getInventory().addItem(Item.get(d[0], d[1], d[2]));
                         }
                     }
                 }else{
-                    foreach (t.getDrops(i) as drops){
-                        player.getInventory().addItem(Item.get(...drops));
+                    for(int[] d : block.getDrops(item)){
+                        player.getInventory().addItem(Item.get(d[0], d[1], d[2]));
                     }
                     player.getLevel().setBlock(block, block1, true);
                 }
