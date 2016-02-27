@@ -160,25 +160,26 @@ public class RevivalBlock extends PluginBase implements Listener{
         }
     }
 
-    public void makeBlock(startX, startY, startZ, endX, endY, endZ, isChange, Level level){
-        for(x = startX; x <= endX; x++){
-            for(y = startY; y <= endY; y++){
-                for(z = startZ; z <= endZ; z++){
-                    if(isChange && isset(this.rand[id = level.getBlock(new Vector3(x, y, z)).getId()])){
-                        this.revi["x:y:z"] = id;
+    public void makeBlock(int startX, int startY, int startZ, int endX, int endY, int endZ, boolean isChange, Level level){
+        for(int x = startX; x <= endX; x++){
+            for(int y = startY; y <= endY; y++){
+                for(int z = startZ; z <= endZ; z++){
+                    int id = level.getBlock(new Vector3(x, y, z)).getId();
+                    if(isChange && this.rand.containsKey((id) + "")){
+                        this.revi.put(x + ":" + y + ":" + z, id);
                     }else{
-                        this.revi["x:y:z"] = true;
+                        this.revi.put(x + ":" + y + ":" + z, -1);
                     }
                 }
             }
         }
     }
 
-    public void destroyBlock(startX, startY, startZ, endX, endY, endZ){
-        for(x = startX; x <= endX; x++){
-            for(y = startY; y <= endY; y++){
-                for(z = startZ; z <= endZ; z++){
-                    unset(this.revi["x:y:z"]);
+    public void destroyBlock(int startX, int startY, int startZ, int endX, int endY, int endZ){
+        for(int x = startX; x <= endX; x++){
+            for(int y = startY; y <= endY; y++){
+                for(int z = startZ; z <= endZ; z++){
+                    this.revi.remove(x + ":" + y + ":" + z);
                 }
             }
         }
