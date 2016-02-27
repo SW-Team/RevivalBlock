@@ -18,12 +18,13 @@ import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.player.PlayerInteractEvent;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class RevivalBlock extends PluginBase implements Listener{
 
-    public HashMap<String, Position> pos = new HashMap<>();
+    public HashMap<String, ArrayList<Position>> pos = new HashMap<>();
 
     public LinkedHashMap<String, Object> rand;
     public LinkedHashMap<String, Object> revi;
@@ -68,31 +69,49 @@ public class RevivalBlock extends PluginBase implements Listener{
         Block block = ev.getBlock();
         Player player = ev.getPlayer();
         if(this.isTool(ev.getItem()) && player.isOp()){
-            if(ev.getAction() == PlayerInteractEvent.RIGHT_CLICK_BLOCK && ev.getFace() != 255) {
-                this.pos[p.getName()]["pos2"] = [block.x, block.y, block.z];
+            ArrayList<Position> pos;
+            if(this.pos.containsKey(player.getName())){
+                pos = this.pos.get(player.getName());
+            }else{
+                pos = new ArrayList<>();
+                this.pos.put(player.getName(), pos);
+            }
+
+            if(ev.getAction() == PlayerInteractEvent.RIGHT_CLICK_BLOCK && ev.getFace() != 255){
+                if(pos.size() < 2){
+                    pos.add(block);
+                }
+                pos.add(1, block);
                 player.sendMessage("[RevivalBlock]Pos2지점을 선택했습니다({t.x}, {t.y}, {t.z})");
-            }elseif(ev.getAction() == PlayerInteractEvent.LEFT_CLICK_BLOCK){
-                this.pos[p.getName()]["pos1"] = [block.x, block.y, block.z];
+            }else if(ev.getAction() == PlayerInteractEvent.LEFT_CLICK_BLOCK){
+                pos.add(0, block);
                 player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다({t.x}, {t.y}, {t.z})");
             }
             ev.setCancelled();
         }
     }
 
+
     @EventHandler
     public void PlayerBreakBlock(BlockBreakEvent ev){
-        i = ev.getItem();
-        t = ev.getBlock();
-        p = ev.getPlayer();
-        x = t.x;
-        y = t.y;
-        z = t.z;
-        if(this.isTool(i) && p.isOp()){
-            this.pos[p.getName()]["pos1"] = [x, y, z];
-            p.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다(x, y, z)");
+        Item item = ev.getItem();
+        Block block = ev.getBlock();
+        Player player = ev.getPlayer();
+        
+        int value;
+        if(this.isTool(item) && player.isOp()){
+            ArrayList<Position> pos;
+            if(this.pos.containsKey(player.getName())){
+                pos = this.pos.get(player.getName());
+            }else{
+                pos = new ArrayList<>();
+                this.pos.put(player.getName(), pos);
+            }
+            pos.add(0, block);
+            player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다({t.x}, {t.y}, {t.z})");
             ev.setCancelled();
-        }elseif((value = self.getRevivalBlock(t)) != false){
-            if(value == true){
+        }else if((value = this.getRevivalBlock(block)) > -2){
+            if(value == -1){
                 as = explode("/", this.rand["normal"]);
                 if(mt_rand(1, as[1]) > as[0]){
                     ev.setCancelled();
@@ -102,37 +121,40 @@ public class RevivalBlock extends PluginBase implements Listener{
                     p.getInventory().addItem(Item.get(...d));
                 }
             }else{
-                block = Item.fromString(value);
-                if(t.getId() == block.getId() and t.getDamage() == block.getDamage()){
-                    item = Item.get(Item.AIR);
-                    foreach(this.rand[block.getId()] as string => as){
+                Block block1 = Block.get(value);
+                if(block.getId() == block1.getId() && block.getDamage() == block1.getDamage()){
+                    Item item1 = Item.get(Item.AIR);
+                    foreach(this.rand[block1.getId()] as string => as){
                         as = explode("/", as);
                         if(mt_rand(1, as[1]) <= as[0]){
                             if(Item.fromString(string) instanceof ItemBlock){
-                                item = Item.fromString(string);
+                                item1 = Item.fromString(string);
                             }else{
-                                unset(this.rand[block.getId()][string]);
+                                unset(this.rand[block1.getId()][string]);
                             }
                         }
                     }
-                    if(item.getId() > 0){
-                        p.getLevel().setBlock(new Vector3(x,y,z), item.getBlock(), true);
+                    if(item1.getId() > 0){
+                        player.getLevel().setBlock(new Vector3(block.x, block.y, block.z), item1.getBlock(), true);
                     }else{
-                        foreach(block.getBlock().getDrops(i) as drops){
-                            p.getInventory().addItem(Item.get(...drops));
+                        foreach(block1.getDrops(i) as drops){
+                            player.getInventory().addItem(Item.get(...drops));
                         }
                     }
                 }else{
                     foreach (t.getDrops(i) as drops){
-                        p.getInventory().addItem(Item.get(...drops));
+                        player.getInventory().addItem(Item.get(...drops));
                     }
-                    p.getLevel().setBlock(t, block.getBlock(), true);
+                    player.getLevel().setBlock(block, block1, true);
                 }
             }
-            slot = p.getInventory().getItemInHand();
-            if(slot.isTool() && !p.isCreative()){
-                if(slot.useOn(t) and slot.getDamage() >= slot.getMaxDurability()) slot.count--;
-                p.getInventory().setItemInHand(slot);
+            Item slot = player.getInventory().getItemInHand();
+            if(slot.isTool() && !player.isCreative()){
+                if(slot.useOn(block) && slot.getDamage() >= slot.getMaxDurability()){
+                    slot.count--;
+                }
+
+                player.getInventory().setItemInHand(slot);
             }
             ev.setCancelled();
         }
