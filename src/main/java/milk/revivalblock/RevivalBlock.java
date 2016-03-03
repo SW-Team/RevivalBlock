@@ -194,6 +194,7 @@ public class RevivalBlock extends PluginBase implements Listener{
     @Override
     public boolean onCommand(CommandSender i, Command cmd, String label, String[] sub){
         if(!(i instanceof Player)){
+            i.sendMessage("[RevivalBlock]Please use this command in game");
             return true;
         }
 
@@ -210,11 +211,13 @@ public class RevivalBlock extends PluginBase implements Listener{
         int ex = (int) Math.max(pos[0].x, pos[1].x);
         int ey = (int) Math.max(pos[0].y, pos[1].y);
         int ez = (int) Math.max(pos[0].z, pos[1].z);
+
         if(cmd.getName().equals("revi")){
             this.makeBlock(sx, sy, sz, ex, ey, ez, sub.length > 0, player.getLevel());
         }else{
             this.destroyBlock(sx, sy, sz, ex, ey, ez);
         }
+
         player.sendMessage("[RevivalBlock]" + (cmd.getName().equals("revi") ? "The chosen block was made to revival block" : "The chosen block is no more revival block"));
         return true;
     }
