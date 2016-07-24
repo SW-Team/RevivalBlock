@@ -79,10 +79,10 @@ public class RevivalBlock extends PluginBase implements Listener{
 
             if(ev.getAction() == PlayerInteractEvent.RIGHT_CLICK_BLOCK && ev.getFace() != 255){
                 pos[1] = block;
-                player.sendMessage("[RevivalBlock]Pos2지점을 선택했습니다({t.x}, {t.y}, {t.z})");
+                player.sendMessage("[RevivalBlock]Pos2지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ")");
             }else if(ev.getAction() == PlayerInteractEvent.LEFT_CLICK_BLOCK){
                 pos[0] = block;
-                player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다({t.x}, {t.y}, {t.z})");
+                player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ")");
             }
             ev.setCancelled();
         }
@@ -105,7 +105,7 @@ public class RevivalBlock extends PluginBase implements Listener{
                 this.pos.put(player.getName(), pos);
             }
             pos[0] = block;
-            player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다({t.x}, {t.y}, {t.z})");
+            player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ")");
             ev.setCancelled();
         }else if((value = this.getRevivalBlock(block)) > -2){
             if(value == -1){
