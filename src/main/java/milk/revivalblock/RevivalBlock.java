@@ -41,11 +41,11 @@ public class RevivalBlock extends PluginBase implements Listener{
     }
 
     public void onDisable(){
-        Config data = new Config(this.getDataFolder() + "data.yml", Config.YAML);
+        Config data = new Config(new File(this.getDataFolder(), "data.yml"), Config.YAML);
         data.setAll(this.rand);
         data.save();
 
-        Config revi = new Config(this.getDataFolder() + "revi.dat", Config.YAML);
+        Config revi = new Config(new File(this.getDataFolder(), "revi.dat"), Config.YAML);
         revi.setAll(this.revi);
         revi.save();
         this.getServer().getLogger().info(TextFormat.GOLD + "[RevivalBlock]Plugin has been disabled");
