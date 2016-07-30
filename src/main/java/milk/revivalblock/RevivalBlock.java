@@ -68,7 +68,7 @@ public class RevivalBlock extends PluginBase implements Listener{
     public void PlayerTouchBlock(PlayerInteractEvent ev){
         Block block = ev.getBlock();
         Player player = ev.getPlayer();
-        if(this.isTool(ev.getItem()) && player.isOp()){
+        if(this.isTool(ev.getItem()) && player.hasPermission("revival.command.revi")){
             Vector3[] pos;
             if(this.pos.containsKey(player.getName())){
                 pos = this.pos.get(player.getName());
@@ -96,7 +96,7 @@ public class RevivalBlock extends PluginBase implements Listener{
         Player player = ev.getPlayer();
         
         int value;
-        if(this.isTool(item) && player.isOp()){
+        if(this.isTool(item) && player.hasPermission("revival.command.revi")){
             Vector3[] pos;
             if(this.pos.containsKey(player.getName())){
                 pos = this.pos.get(player.getName());
