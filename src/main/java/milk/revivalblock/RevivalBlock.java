@@ -60,6 +60,10 @@ public class RevivalBlock extends PluginBase implements Listener{
         return (Integer) data;
     }
 
+    public boolean isRevivalBlock(Position pos){
+        return this.getRevivalBlock(pos) > -2;
+    }
+
     public boolean isTool(Item item){
         return item.getId() == this.getConfig().get("tool-id", Item.STICK);
     }
