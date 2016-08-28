@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 
 public class RevivalBlock extends PluginBase implements Listener{
 
-    public HashMap<String, Vector3[]> pos = new HashMap<>();
+    public HashMap<String, Position[]> pos = new HashMap<>();
 
     public LinkedHashMap<String, Object> rand;
     public LinkedHashMap<String, Object> revi;
@@ -73,20 +73,20 @@ public class RevivalBlock extends PluginBase implements Listener{
         Block block = ev.getBlock();
         Player player = ev.getPlayer();
         if(this.isTool(ev.getItem()) && player.hasPermission("revival.command.revi")){
-            Vector3[] pos;
+            Position[] pos;
             if(this.pos.containsKey(player.getName())){
                 pos = this.pos.get(player.getName());
             }else{
-                pos = new Vector3[2];
+                pos = new Position[2];
                 this.pos.put(player.getName(), pos);
             }
 
             if(ev.getAction() == PlayerInteractEvent.RIGHT_CLICK_BLOCK && ev.getFace() != 255){
-                pos[1] = block;
-                player.sendMessage("[RevivalBlock]Pos2지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ")");
+                pos[1] = block.floor();
+                player.sendMessage("[RevivalBlock]Pos2지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ", " + block.level.getFolderName() + ")");
             }else if(ev.getAction() == PlayerInteractEvent.LEFT_CLICK_BLOCK){
-                pos[0] = block;
-                player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ")");
+                pos[0] = block.floor();
+                player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ", " + block.level.getFolderName() + ")");
             }
             ev.setCancelled();
         }
@@ -101,15 +101,15 @@ public class RevivalBlock extends PluginBase implements Listener{
         
         int value;
         if(this.isTool(item) && player.hasPermission("revival.command.revi")){
-            Vector3[] pos;
+            Position[] pos;
             if(this.pos.containsKey(player.getName())){
                 pos = this.pos.get(player.getName());
             }else{
-                pos = new Vector3[2];
+                pos = new Position[2];
                 this.pos.put(player.getName(), pos);
             }
             pos[0] = block;
-            player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ")");
+            player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ", " + block.level.getFolderName() + ")");
             ev.setCancelled();
         }else if((value = this.getRevivalBlock(block)) > -2){
             if(value == -1){
@@ -176,20 +176,20 @@ public class RevivalBlock extends PluginBase implements Listener{
                 for(int z = startZ; z <= endZ; z++){
                     int id = level.getBlock(new Vector3(x, y, z)).getId();
                     if(isChange && this.rand.containsKey((id) + "")){
-                        this.revi.put(x + ":" + y + ":" + z, id);
+                        this.revi.put(x + ":" + y + ":" + z + ":" + level.getFolderName(), id);
                     }else{
-                        this.revi.put(x + ":" + y + ":" + z, -1);
+                        this.revi.put(x + ":" + y + ":" + z + ":" + level.getFolderName(), -1);
                     }
                 }
             }
         }
     }
 
-    public void destroyBlock(int startX, int startY, int startZ, int endX, int endY, int endZ){
+    public void destroyBlock(int startX, int startY, int startZ, int endX, int endY, int endZ, Level level){
         for(int x = startX; x <= endX; x++){
             for(int y = startY; y <= endY; y++){
                 for(int z = startZ; z <= endZ; z++){
-                    this.revi.remove(x + ":" + y + ":" + z);
+                    this.revi.remove(x + ":" + y + ":" + z + ":" + level.getFolderName());
                 }
             }
         }
@@ -198,14 +198,16 @@ public class RevivalBlock extends PluginBase implements Listener{
     @Override
     public boolean onCommand(CommandSender i, Command cmd, String label, String[] sub){
         if(!(i instanceof Player)){
-            i.sendMessage("[RevivalBlock]Please use this command in game");
+            i.sendMessage("[RevivalBlock]게임 안에서 사용해주세요");
+            //i.sendMessage("[RevivalBlock]Please use this command in game");
             return true;
         }
 
         Player player = (Player) i;
-        Vector3[] pos = this.pos.get(player.getName());
-        if(pos == null || pos[0] == null || pos[1] == null){
-            player.sendMessage("[RevivalBlock]Please tap a block to make to revival block");
+        Position[] pos = this.pos.get(player.getName());
+        if(pos == null || pos[0] == null || pos[1] == null || pos[1].getLevel() != pos[0].getLevel()){
+            player.sendMessage("[RevivalBlock]소생블럭이 설정되지 않았거나 지역이 서로 달라요");
+            //player.sendMessage("[RevivalBlock]Please tap a block to make to revival block");
             return true;
         }
 
@@ -217,12 +219,12 @@ public class RevivalBlock extends PluginBase implements Listener{
         int ez = (int) Math.max(pos[0].z, pos[1].z);
 
         if(cmd.getName().equals("revi")){
-            this.makeBlock(sx, sy, sz, ex, ey, ez, sub.length > 0, player.getLevel());
+            this.makeBlock(sx, sy, sz, ex, ey, ez, sub.length > 0, pos[0].getLevel());
         }else{
-            this.destroyBlock(sx, sy, sz, ex, ey, ez);
+            this.destroyBlock(sx, sy, sz, ex, ey, ez, pos[0].getLevel());
         }
 
-        player.sendMessage("[RevivalBlock]" + (cmd.getName().equals("revi") ? "The chosen block was made to revival block" : "The chosen block is no more revival block"));
+        player.sendMessage("[RevivalBlock]" + (cmd.getName().equals("revi") ? "선택한 블럭은 소생블럭이 되었어요" : "선택한 블럭은 이제 더이상 소생블럭이 아니에요"));//"The chosen block was made to revival block" : "The chosen block is no more revival block"));
         return true;
     }
 }
