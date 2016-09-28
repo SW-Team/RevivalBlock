@@ -53,7 +53,7 @@ public class RevivalBlock extends PluginBase implements Listener{
 
     public int getRevivalBlock(Position pos){
         pos = pos.floor();
-        Object data = this.revi.get(pos.x + ":" + pos.y + ":" + pos.z + ":" + pos.level.getFolderName());
+        Object data = this.revi.get(((int) pos.x) + ":" + ((int) pos.y) + ":" + ((int) pos.z) + ":" + pos.level.getFolderName());
         if(data == null || !(data instanceof Integer)){
             return -2;
         }
@@ -81,12 +81,10 @@ public class RevivalBlock extends PluginBase implements Listener{
                 this.pos.put(player.getName(), pos);
             }
 
-            if(ev.getAction() == PlayerInteractEvent.RIGHT_CLICK_BLOCK && ev.getFace() != 255){
-                pos[1] = block.floor();
-                player.sendMessage("[RevivalBlock]Pos2지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ", " + block.level.getFolderName() + ")");
-            }else if(ev.getAction() == PlayerInteractEvent.LEFT_CLICK_BLOCK){
-                pos[0] = block.floor();
-                player.sendMessage("[RevivalBlock]Pos1지점을 선택했습니다(" + block.x + ", " + block.y + ", " + block.z + ", " + block.level.getFolderName() + ")");
+            if((ev.getAction() == PlayerInteractEvent.RIGHT_CLICK_BLOCK && ev.getFace() != 255) || ev.getAction() == PlayerInteractEvent.LEFT_CLICK_BLOCK){
+                boolean kkk = ev.getAction() == PlayerInteractEvent.LEFT_CLICK_BLOCK;
+                pos[kkk ? 0 : 1] = block.floor();
+                player.sendMessage("[RevivalBlock]" +(kkk ? "Pos1" : "Pos2") + "지점을 선택했습니다(" + ((int) block.x) + ", " + ((int) block.y) + ", " + ((int) block.z) + ", " + block.level.getFolderName() + ")");
             }
             ev.setCancelled();
         }
