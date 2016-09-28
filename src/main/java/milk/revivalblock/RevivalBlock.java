@@ -122,26 +122,25 @@ public class RevivalBlock extends PluginBase implements Listener{
             }else{
                 Block block1 = Block.get(value);
                 if(block.getId() == block1.getId() && block.getDamage() == block1.getDamage()){
-                    Object k = this.rand.get(block1.getId() + "");
-                    if(!(k instanceof HashMap)){
+                    Object list = this.rand.get(block1.getId() + "");
+                    if(!(list instanceof HashMap)){
                         return;
                     }
 
                     Item[] item1 = {Item.get(Item.AIR)};
-                    HashMap<String, Object> list = (HashMap<String, Object>) k;
-                    list.forEach((string, as) -> {
+                    for(Object string : ((HashMap) list).keySet()){
                         try{
-                            String[] rand = as.toString().split("/");
+                            String[] rand = ((HashMap) list).get(string).toString().split("/");
                             if(Utils.rand(1, Integer.parseInt(rand[1])) <= Integer.parseInt(rand[0])){
-                                Item item2 = Item.fromString(string);
+                                Item item2 = Item.fromString((String) string);
                                 if(item2 instanceof ItemBlock){
                                     item1[0] = item2;
                                 }else{
-                                    list.remove(string);
+                                    ((HashMap) list).remove(string);
                                 }
                             }
                         }catch(Exception ignore){}
-                    });
+                    }
 
                     if(item1[0].getId() > 0){
                         player.getLevel().setBlock(new Vector3(block.x, block.y, block.z), item1[0].getBlock(), true);
